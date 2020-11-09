@@ -3,9 +3,9 @@ import cv2
 import os
 import numpy as np
 
-INPUT_LABEL_FILE = "data/labels-03.json"
-OUTPUT_LABEL_FILE = "data/label.json"
-VIDEO_FOLDER = "data/videos"
+INPUT_LABEL_FILE = "data/labels.json"
+OUTPUT_LABEL_FILE = "data/labels-processed.json"
+VIDEO_FOLDER = "/mnt/DATA/PUSHUP_PROJECT/processed"
 HIT_PADDING = 10
 
 with open(INPUT_LABEL_FILE, 'r') as infile:
