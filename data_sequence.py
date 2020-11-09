@@ -78,19 +78,25 @@ class DataSequence(Sequence):
             img_path =  os.path.join(
                 self.video_folder, "{}_{}.png".format(video_id, f["frame_id"]))
             img = cv2.imread(img_path)
+            if img is None:
+                print(img_path)
+                exit(1)
             batch_x.append(img)
+        
+        batch_y = np.array([f["label"] for f in frame_seq])
     
         # batch_x = batch_x.reshape((self.batch_size, self.seq_len, 224, 224, 3))
         reshaped_x = []
+        reshaped_y = []
         for b in range(self.batch_size):
             start_idx = self.seq_len * b
-            seq = batch_x[start_idx:start_idx + self.seq_len]
-            reshaped_x.append(seq)
+            seq_x = batch_x[start_idx:start_idx + self.seq_len]
+            reshaped_x.append(seq_x)
+            seq_y = batch_y[start_idx:start_idx + self.seq_len]
+            reshaped_y.append(seq_y)
         reshaped_x = np.array(reshaped_x)
         batch_x = reshaped_x
-
-        batch_y = np.array([f["label"] for f in frame_seq])
-        batch_y = batch_y.reshape((self.batch_size, -1))
-        batch_y = np.median(batch_y, axis=1).flatten()
+        reshaped_y = np.array(reshaped_y).reshape((self.batch_size, self.seq_len, 1))
+        batch_y = reshaped_y
 
         return batch_x, batch_y

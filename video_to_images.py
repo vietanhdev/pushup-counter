@@ -8,8 +8,10 @@ OUTPUT_FOLDER = "/mnt/DATA/PUSHUP_PROJECT/images"
 
 videos = os.listdir(VIDEO_FOLDER)
 skip = 1
-videos = ["270.mp4"]
 for i, video in enumerate(videos):
+
+    if not video.endswith("mp4"):
+        continue
 
     print(i)
     cap = cv2.VideoCapture(os.path.join(VIDEO_FOLDER, video))
