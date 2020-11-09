@@ -6,7 +6,7 @@ import numpy as np
 INPUT_LABEL_FILE = "data/labels.json"
 OUTPUT_LABEL_FILE = "data/labels-processed.json"
 VIDEO_FOLDER = "/mnt/DATA/PUSHUP_PROJECT/processed"
-HIT_PADDING = 10
+HIT_PADDING = 5
 
 with open(INPUT_LABEL_FILE, 'r') as infile:
     raw_data = json.load(infile)
@@ -29,8 +29,15 @@ with open(INPUT_LABEL_FILE, 'r') as infile:
             
             videos[label["video_id"]]["n_frames"] = frame_count
             hit_frames = [False] * (frame_count + 1)
+
+            l = np.array(content["label"])
+            l1 = l[1:]
+            l2 = l[:-1]
+            avg_distance = np.mean(l2 - l1)
+
             for l in content["label"]:
-                for i in range(max(0, l-HIT_PADDING), min(frame_count-1, l+HIT_PADDING)):
+                pad = int(max(5, min(8, avg_distance // 4)))
+                for i in range(max(0, l-0), min(frame_count-pad, l+pad)):
                     hit_frames[i] = True
 
             final_label = []

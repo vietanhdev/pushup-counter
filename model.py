@@ -8,10 +8,10 @@ from tensorflow.keras.applications import MobileNetV2
 
 
 
-def build_model(seq_length = 10):
+def build_model(seq_len=10):
 
     model=Sequential()
-    model.add(TimeDistributed(Conv2D(32, (3, 3), padding='same'), input_shape=(seq_length, 224, 224, 3)))
+    model.add(TimeDistributed(Conv2D(32, (3, 3), padding='same'), input_shape=(seq_len, 224, 224, 3)))
     model.add(TimeDistributed(Activation('relu')))
     model.add(TimeDistributed(Conv2D(32, (3, 3))))
     model.add(TimeDistributed(Activation('relu')))
@@ -19,8 +19,9 @@ def build_model(seq_length = 10):
     model.add(TimeDistributed(Dropout(0.25)))
     model.add(TimeDistributed(Flatten()))
     model.add(TimeDistributed(Dense(512)))
-    model.add(TimeDistributed(Dense(35, name="first_dense_rgb" )))
-    model.add(LSTM(20, return_sequences=True, name="lstm_layer_rgb"));
+    model.add(TimeDistributed(Dense(35)))
+    model.add(LSTM(20, return_sequences=True))
+    model.add(LSTM(20, return_sequences=True))
     model.add(TimeDistributed(Dense(1, activation = "sigmoid")))
 
     return model

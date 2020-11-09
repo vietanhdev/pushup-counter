@@ -15,7 +15,7 @@ class DataSequence(Sequence):
             labels = json.load(infile)["labels"]
 
         # Only for 1 video
-        labels = {"270": labels["270"]}
+        # labels = {"270": labels["270"]}
 
         frames = []
         for video_id, label in labels.items():
@@ -25,6 +25,19 @@ class DataSequence(Sequence):
                     "frame_id": i,
                     "label": 1 if i in label["label"] else 0
                 })
+
+        # Show frames
+        # for frame in frames:
+        #     img_path =  os.path.join(
+        #         self.video_folder, "{}_{}.png".format(frame["video_id"], frame["frame_id"]))
+        #     img = cv2.imread(img_path)
+
+        #     if frame["label"] == 1:
+        #         img = cv2.rectangle(img, (10, 10), (50, 50), (0, 0, 255), -1) 
+
+        #     cv2.imshow("Debug", img)
+        #     cv2.waitKey(100)
+
         self.frames = frames
         self.n_samples = len(frames)
         self.seq_len = seq_len
@@ -78,6 +91,6 @@ class DataSequence(Sequence):
 
         batch_y = np.array([f["label"] for f in frame_seq])
         batch_y = batch_y.reshape((self.batch_size, -1))
-        batch_y = batch_y[:, 0].flatten()
+        batch_y = np.median(batch_y, axis=1).flatten()
 
         return batch_x, batch_y
