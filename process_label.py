@@ -33,10 +33,11 @@ with open(INPUT_LABEL_FILE, 'r') as infile:
             l = np.array(content["label"])
             l1 = l[1:]
             l2 = l[:-1]
-            avg_distance = np.mean(l2 - l1)
+            avg_distance = np.abs(np.mean(l2 - l1))
 
             for l in content["label"]:
-                pad = int(max(5, min(8, avg_distance // 4)))
+                pad = int(max(5, min(12, avg_distance // 4)))
+                print(pad)
                 for i in range(max(0, l-0), min(frame_count-pad, l+pad)):
                     hit_frames[i] = True
 

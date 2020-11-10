@@ -15,7 +15,7 @@ class DataSequence(Sequence):
             labels = json.load(infile)["labels"]
 
         # Only for 1 video
-        # labels = {"270": labels["270"]}
+        labels = {"270": labels["270"]}
 
         frames = []
         for video_id, label in labels.items():
@@ -27,7 +27,7 @@ class DataSequence(Sequence):
                 })
 
         # Show frames
-        # for frame in frames:
+        # for frame in frames[3000:]:
         #     img_path =  os.path.join(
         #         self.video_folder, "{}_{}.png".format(frame["video_id"], frame["frame_id"]))
         #     img = cv2.imread(img_path)
@@ -36,7 +36,7 @@ class DataSequence(Sequence):
         #         img = cv2.rectangle(img, (10, 10), (50, 50), (0, 0, 255), -1) 
 
         #     cv2.imshow("Debug", img)
-        #     cv2.waitKey(100)
+        #     cv2.waitKey(30)
 
         self.frames = frames
         self.n_samples = len(frames)
