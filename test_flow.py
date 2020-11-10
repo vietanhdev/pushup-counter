@@ -61,8 +61,10 @@ for i, video in enumerate(videos):
 
             # Computes the magnitude and angle of the 2D vectors
             magnitude, angle = cv2.cartToPolar(flow[..., 0], flow[..., 1])
+
             # Sets image hue according to the optical flow direction
             mask[..., 0] = angle * 180 / np.pi / 2
+            
 
             # Sets image value according to the optical flow magnitude (normalized)
             mask[..., 2] = cv2.normalize(magnitude, None, 0, 255, cv2.NORM_MINMAX)

@@ -81,22 +81,35 @@ class DataSequence(Sequence):
             if img is None:
                 print(img_path)
                 exit(1)
+            img = img - 127.5
+            img /=  127.5
             batch_x.append(img)
-        
+        batch_x = np.array(batch_x)
         batch_y = np.array([f["label"] for f in frame_seq])
-    
-        # batch_x = batch_x.reshape((self.batch_size, self.seq_len, 224, 224, 3))
-        reshaped_x = []
-        reshaped_y = []
-        for b in range(self.batch_size):
-            start_idx = self.seq_len * b
-            seq_x = batch_x[start_idx:start_idx + self.seq_len]
-            reshaped_x.append(seq_x)
-            seq_y = batch_y[start_idx:start_idx + self.seq_len]
-            reshaped_y.append(seq_y)
-        reshaped_x = np.array(reshaped_x)
-        batch_x = reshaped_x
-        reshaped_y = np.array(reshaped_y).reshape((self.batch_size, self.seq_len, 1))
-        batch_y = reshaped_y
+
+
+        batch_x = batch_x.reshape((self.batch_size, self.seq_len, 224, 224, 3))
+        batch_y = batch_y.reshape((self.batch_size, self.seq_len, 1))
+
+        # for i in range(self.batch_size):
+        #     for j in range(self.seq_len):
+        #         img = batch_x[i, j, ...].reshape(224, 224, 3)
+        #         if batch_y[i, j]:
+        #             img = cv2.rectangle(img, (10, 10), (50, 50), (0, 0, 255), -1) 
+        #         cv2.imshow("Debug", img)
+        #         cv2.waitKey(10)
+        # reshaped_x = []
+        # reshaped_y = []
+        # for b in range(self.batch_size):
+        #     start_idx = self.batch_size_times_seq_len * b
+        #     seq_x = np.array(batch_x[start_idx:start_idx + self.batch_size_times_seq_len])
+        #     seq_x = seq_x.reshape((self.seq_len, 224, 224, 3))
+        #     seq_y = np.array(batch_y[start_idx:start_idx + self.batch_size_times_seq_len]).reshape((self.seq_len, 1))
+        #     reshaped_x.append(seq_x)
+        #     reshaped_y.append(seq_y)
+        # reshaped_x = np.array(reshaped_x)
+        # batch_x = reshaped_x
+        # reshaped_y = np.array(reshaped_y).reshape((self.batch_size, self.seq_len, 1))
+        # batch_y = reshaped_y
 
         return batch_x, batch_y
