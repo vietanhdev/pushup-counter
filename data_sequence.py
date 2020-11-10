@@ -15,7 +15,7 @@ class DataSequence(Sequence):
             labels = json.load(infile)["labels"]
 
         # Only for 1 video
-        labels = {"270": labels["270"]}
+        # labels = {"270": labels["270"]}
 
         frames = []
         for video_id, label in labels.items():

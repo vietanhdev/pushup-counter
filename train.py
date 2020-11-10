@@ -5,9 +5,7 @@ import tensorflow as tf
 from tensorflow.keras import backend as K
 
 data = DataSequence("/mnt/DATA/PUSHUP_PROJECT/images", "data/labels-processed.json", batch_size=8, seq_len=5)
-
 model = build_model(seq_len=5)
-
 model.load_weights("model.40.h5")
 
 
@@ -24,7 +22,7 @@ model.compile(loss=[focal_loss(alpha=.1, gamma=2)], optimizer=opt, metrics=["acc
 
 my_callbacks = [
     # tf.keras.callbacks.EarlyStopping(patience=3),
-    tf.keras.callbacks.ModelCheckpoint(filepath='model.{epoch:02d}.h5'),
+    tf.keras.callbacks.ModelCheckpoint(filepath='model.{epoch:03d}.h5'),
     tf.keras.callbacks.TensorBoard(log_dir='./logs'),
 ]
 model.fit(data, epochs=200, callbacks=my_callbacks, shuffle=True)
