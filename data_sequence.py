@@ -27,7 +27,7 @@ class DataSequence(Sequence):
                 })
 
         # Show frames
-        # for frame in frames[3000:]:
+        # for frame in frames:
         #     img_path =  os.path.join(
         #         self.video_folder, "{}_{}.png".format(frame["video_id"], frame["frame_id"]))
         #     img = cv2.imread(img_path)
@@ -57,21 +57,7 @@ class DataSequence(Sequence):
         # => Ensure frames come from 1 video
         if any(f["video_id"] != first_frame["video_id"] for f in frame_seq):
             frame_seq = [first_frame] * self.batch_size_times_seq_len
-
-        # Delete old videos from cache
-        # if len(self.videos) > 15:
-        #     for v in self.videos.keys():
-        #         if time.time() - self.videos[v]["load_time"] > 5 * 60:
-        #             self.videos.pop(v, None)
-
-        # Load video if needed
         video_id = first_frame["video_id"]
-        # if video_id not in self.videos:
-        #     self.videos[video_id] = {
-        #         "data": np.load(os.path.join(self.video_folder,
-        #             "{}.npy".format(video_id))),
-        #         "load_time": time.time()
-        #     }
     
         batch_x = []
         for f in frame_seq:
@@ -90,26 +76,5 @@ class DataSequence(Sequence):
 
         batch_x = batch_x.reshape((self.batch_size, self.seq_len, 224, 224, 3))
         batch_y = batch_y.reshape((self.batch_size, self.seq_len, 1))
-
-        # for i in range(self.batch_size):
-        #     for j in range(self.seq_len):
-        #         img = batch_x[i, j, ...].reshape(224, 224, 3)
-        #         if batch_y[i, j]:
-        #             img = cv2.rectangle(img, (10, 10), (50, 50), (0, 0, 255), -1) 
-        #         cv2.imshow("Debug", img)
-        #         cv2.waitKey(10)
-        # reshaped_x = []
-        # reshaped_y = []
-        # for b in range(self.batch_size):
-        #     start_idx = self.batch_size_times_seq_len * b
-        #     seq_x = np.array(batch_x[start_idx:start_idx + self.batch_size_times_seq_len])
-        #     seq_x = seq_x.reshape((self.seq_len, 224, 224, 3))
-        #     seq_y = np.array(batch_y[start_idx:start_idx + self.batch_size_times_seq_len]).reshape((self.seq_len, 1))
-        #     reshaped_x.append(seq_x)
-        #     reshaped_y.append(seq_y)
-        # reshaped_x = np.array(reshaped_x)
-        # batch_x = reshaped_x
-        # reshaped_y = np.array(reshaped_y).reshape((self.batch_size, self.seq_len, 1))
-        # batch_y = reshaped_y
 
         return batch_x, batch_y
