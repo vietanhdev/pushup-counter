@@ -1,12 +1,6 @@
-
-import tensorflow as tf
-from tensorflow.keras.callbacks import ModelCheckpoint
-from tensorflow.keras.models import Model, load_model, Sequential
-from tensorflow.keras.layers import Dense, Activation, Dropout, Input, Masking, TimeDistributed, LSTM, Conv1D
-from tensorflow.keras.layers import GRU, Bidirectional, BatchNormalization, Reshape, Flatten, Conv2D, MaxPooling2D, GlobalAveragePooling1D, GlobalAveragePooling2D
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Dropout, TimeDistributed, LSTM, Conv2D, GlobalAveragePooling2D
 from tensorflow.keras.applications import MobileNetV2
-
-
 
 def build_model(seq_len=10):
 

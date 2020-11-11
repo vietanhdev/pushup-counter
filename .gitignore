@@ -1,5 +1,10 @@
 /data
+/logs
+
+/configs/*
+!/configs/.config-sample.json
+
+/experiments/*
+
 *.pyc
 *.cython
-/logs
-/model.*

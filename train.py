@@ -1,30 +1,51 @@
-from tensorflow.keras.optimizers import Adam
-from model import build_model
-from data_sequence import DataSequence
+import sys
+import os
+import json
+from pathlib import Path
+
 import tensorflow as tf
-from tensorflow.keras import backend as K
 
-data = DataSequence("/mnt/DATA/PUSHUP_PROJECT/images", "data/labels-processed.json", batch_size=8, seq_len=5)
-model = build_model(seq_len=5)
-model.load_weights("model.031.h5")
+from model import build_model
+from losses import focal_loss
+from data_sequence import DataSequence
+
+# Check configuration file
+args = sys.argv
+if len(args) != 2:
+    print("Usage: python train.py <path-to-config-file.json>")
+    exit(0)
+
+# Check and load config file
+config_file = args[1]
+if not os.path.isfile(config_file):
+    print("Config is not a file: {}".format(config_file))
+with open(config_file, "r") as infile:
+    config = json.load(infile)
+
+# Create experiment folder
+experiment_folder = config["experiment_folder"]
+Path(experiment_folder).mkdir(parents=True, exist_ok=True)
+
+# Create data sequences
+train_data = DataSequence(config["data"]["train_images"],
+        config["data"]["train_labels"],
+        batch_size=config["train_params"]["train_batchsize"],
+        seq_len=config["model"]["seq_len"])
+# TODO: data sequences for validation and testing
 
 
-def focal_loss(gamma=2., alpha=.25):
-	def focal_loss_fixed(y_true, y_pred):
-		pt_1 = tf.where(tf.equal(y_true, 1), y_pred, tf.ones_like(y_pred))
-		pt_0 = tf.where(tf.equal(y_true, 0), y_pred, tf.zeros_like(y_pred))
-		return -K.mean(alpha * K.pow(1. - pt_1, gamma) * K.log(pt_1)) - K.mean((1 - alpha) * K.pow(pt_0, gamma) * K.log(1. - pt_0))
-	return focal_loss_fixed
+# Build model
+model = build_model(seq_len=config["model"]["seq_len"])
+if config["train_params"]["load_weights"]:
+    model.load_weights(config["train_params"]["pretrained_weights"])
 
-opt = Adam(lr=0.0001, beta_1=0.9, beta_2=0.999, decay=0.01)
+# Compile for training
+opt = tf.keras.optimizers.Adam(lr=config["train_params"]["learning_rate"])
 model.compile(loss=[focal_loss(alpha=.1, gamma=2)], optimizer=opt, metrics=["accuracy"])
 
-
-my_callbacks = [
-    # tf.keras.callbacks.EarlyStopping(patience=3),
-    tf.keras.callbacks.ModelCheckpoint(filepath='model.{epoch:03d}.h5'),
-    tf.keras.callbacks.TensorBoard(log_dir='./logs'),
+# Fit
+model_callbacks = [
+    tf.keras.callbacks.ModelCheckpoint(filepath=os.path.join(experiment_folder, 'model.{epoch:03d}.h5')),
+    tf.keras.callbacks.TensorBoard(log_dir=os.path.join(experiment_folder, 'logs')),
 ]
-model.fit(data, epochs=200, callbacks=my_callbacks, shuffle=True)
-
-loss, acc = model.evaluate(data)
+model.fit(train_data, epochs=config["train_params"]["n_epochs"], callbacks=model_callbacks, shuffle=True)

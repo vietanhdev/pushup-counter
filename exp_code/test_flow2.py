@@ -35,7 +35,6 @@ lk_params = dict( winSize  = (15,15),
                   criteria = (cv.TERM_CRITERIA_EPS | cv.TERM_CRITERIA_COUNT, 10, 0.03))
 
 
-
 videos = os.listdir(VIDEO_FOLDER)
 skip = 1
 for i, video in enumerate(videos):

@@ -73,7 +73,6 @@ class DataSequence(Sequence):
         batch_x = np.array(batch_x)
         batch_y = np.array([f["label"] for f in frame_seq])
 
-
         batch_x = batch_x.reshape((self.batch_size, self.seq_len, 224, 224, 3))
         batch_y = batch_y.reshape((self.batch_size, self.seq_len, 1))
 
