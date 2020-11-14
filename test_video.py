@@ -2,10 +2,13 @@ from tensorflow.keras.models import load_model
 from losses import focal_loss
 import cv2
 import numpy as np
+from models import build_c3d_model
 
 VIDEO = "/mnt/DATA/PUSHUP_PROJECT/processed/270.mp4"
 
-model = load_model("model.43.h5", custom_objects={"focal_loss_fixed": focal_loss})
+# model = build_c3d_model(16)
+model = load_model("/mnt/DATA/PUSHUP_PROJECT/pushup-counter-slowfast/experiments/config-c3d-01/model.080.h5")
+# model.load_weights("/mnt/DATA/PUSHUP_PROJECT/pushup-counter-slowfast/experiments/config-c3d-01/model.039.h5")
 
 seq_len = 5
 

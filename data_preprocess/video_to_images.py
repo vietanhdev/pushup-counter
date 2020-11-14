@@ -2,9 +2,12 @@ import os
 import cv2
 import numpy as np
 from numpy import save
+import pathlib
 
 VIDEO_FOLDER = "/mnt/DATA/PUSHUP_PROJECT/processed"
-OUTPUT_FOLDER = "/mnt/DATA/PUSHUP_PROJECT/images"
+OUTPUT_FOLDER = "/mnt/DATA/PUSHUP_PROJECT/images-112x112"
+
+pathlib.Path(OUTPUT_FOLDER).mkdir(exist_ok=True, parents=True)
 
 videos = os.listdir(VIDEO_FOLDER)
 skip = 1
@@ -30,7 +33,7 @@ for i, video in enumerate(videos):
         for _ in range(skip):
             ret, img = cap.read()
         if ret:
-            img = cv2.resize(img, (224, 224))
+            img = cv2.resize(img, (112, 112))
             cv2.imwrite(os.path.join(OUTPUT_FOLDER, "{}_{}.png".format(video[:-4], frame_id)), img)
             frame_id += 1
             # buf[int(fc / skip)] = img

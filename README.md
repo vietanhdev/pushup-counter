@@ -1,3 +1,3 @@
-# Pushup Counter
+# Pushup Counter - SlowFast version
 
 In development.

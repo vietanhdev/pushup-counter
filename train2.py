@@ -5,11 +5,11 @@ from pathlib import Path
 
 import tensorflow as tf
 
-from models import build_slowfast_model, build_cnn_lstm_model, build_cnn_lstm_model2, build_c3d_model
+from models_2 import build_2_flow_model
 from losses import focal_loss
-from data_sequence import DataSequence
+from data_sequence_2 import DataSequence
 
-tf.compat.v1.disable_eager_execution()
+# tf.compat.v1.disable_eager_execution()
 
 # Check configuration file
 args = sys.argv
@@ -30,20 +30,17 @@ Path(experiment_folder).mkdir(parents=True, exist_ok=True)
 
 # Create data sequences
 train_data = DataSequence(config["data"]["train_images"],
+        config["data"]["train_flow_images"],
         config["data"]["train_labels"],
-        batch_size=config["train_params"]["train_batchsize"],
-        seq_len=config["model"]["seq_len"],
-        y_steps=1)
-# TODO: data sequences for validation and testing
+        batch_size=config["train_params"]["train_batchsize"])
 val_data = DataSequence(config["data"]["val_images"],
+        config["data"]["val_flow_images"],
         config["data"]["val_labels"],
-        batch_size=config["train_params"]["val_batchsize"],
-        seq_len=config["model"]["seq_len"],
-        y_steps=1)
+        batch_size=config["train_params"]["val_batchsize"])
 
 
 # Build model
-model = build_cnn_lstm_model(config["model"]["seq_len"])
+model = build_2_flow_model()
 if config["train_params"]["load_weights"]:
     model.load_weights(config["train_params"]["pretrained_weights"])
 
