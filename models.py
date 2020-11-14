@@ -69,20 +69,20 @@ def build_c3d_model(seq_len=10):
     model.add(TimeDistributed(Dense(1, activation = "sigmoid")))
 
     # 5th layer group  
-    # model.add(Conv3D(512, (3, 3, 3), activation="relu",name="conv5a", 
-    #                  strides=(1, 1, 1), padding="same"))   
-    # model.add(Conv3D(512, (3, 3, 3), activation="relu",name="conv5b",
-    #                   strides=(1, 1, 1), padding="same"))
-    # model.add(ZeroPadding3D(padding=(0, 1, 1)))	
-    # model.add(MaxPooling3D(pool_size=(2, 2, 2), strides=(2, 2, 2), name="pool5", padding="valid"))
-    # model.add(Flatten())
+    model.add(Conv3D(512, (3, 3, 3), activation="relu",name="conv5a", 
+                     strides=(1, 1, 1), padding="same"))   
+    model.add(Conv3D(512, (3, 3, 3), activation="relu",name="conv5b",
+                      strides=(1, 1, 1), padding="same"))
+    model.add(ZeroPadding3D(padding=(0, 1, 1)))	
+    model.add(MaxPooling3D(pool_size=(2, 2, 2), strides=(2, 2, 2), name="pool5", padding="valid"))
+    model.add(Flatten())
 
-    # # FC layers group
-    # model.add(Dense(1024, activation='relu', name='fc6'))
-    # model.add(Dropout(.5))
-    # model.add(Dense(512, activation='relu', name='fc7'))
-    # model.add(Dropout(.5))
-    # model.add(Dense(seq_len, activation='sigmoid', name='fc8'))
+    # FC layers group
+    model.add(Dense(1024, activation='relu', name='fc6'))
+    model.add(Dropout(.5))
+    model.add(Dense(512, activation='relu', name='fc7'))
+    model.add(Dropout(.5))
+    model.add(Dense(seq_len, activation='sigmoid', name='fc8'))
 
     return model
 
