@@ -99,7 +99,7 @@ for i, video in enumerate(videos):
 
     frame_id = 0
 
-    signal = np.zeros((frameCount,), dtype=float)
+    signal = np.zeros((frameCount), dtype=float)
 
     mask = None
 
@@ -122,7 +122,11 @@ for i, video in enumerate(videos):
             # print(frame_id, "/", frameCount)
 
             angle = np.mean(mask[..., 0])
-            signal[frame_id] = angle
+            magnitude = cv2.normalize(mask[..., 2], None, 0, 1.0, cv2.NORM_MINMAX, dtype=cv2.CV_32F) 
+
+            signal_point = np.mean(angle * magnitude)
+            signal[frame_id] = signal_point
+            # signal = np.append(signal, [signal_point])
             # if len(signal) > max_signal_len:
             #     signal = signal[1:]
 
@@ -142,49 +146,48 @@ for i, video in enumerate(videos):
             # cv2.waitKey(1)
 
     cap.release()
+    raw_signal = signal
+    # signal = smooth(signal, window_len=10)
+    # signal = signal[9:]
+    # signal = smooth(signal, window_len=10)
+    # signal = signal[9:]
     signal = smooth(signal, window_len=10)
     signal = signal[9:]
-    signal = smooth(signal, window_len=10)
-    signal = signal[9:]
-    signal = smooth(signal, window_len=10)
-    signal = signal[9:]
-    signal = signal[1:] - signal[:-1]
-    signal = smooth(signal, window_len=20)
-    signal = signal[19:]
+    # signal = signal[1:] - signal[:-1]
+    # signal = smooth(signal, window_len=20)
+    # signal = signal[19:]
     signal = np.append(signal, [0])
     # print(len(signal))
     bin_label = [0 if signal[i] > 0 else 1 for i in range(signal.shape[0])]
-    flow_labels[video[:-4]] = bin_label
-    # print(bin_label)
-    
-    # exit(1)
+    flow_labels[video[:-4]] = {}
+    flow_labels[video[:-4]]["raw_signal"] = raw_signal.tolist()
+    flow_labels[video[:-4]]["bin_label"] = bin_label
 
     # signal = (0.5 * signal[1:] + 0.5 * signal[:-1])
+    frame_id = 0
+    cap = cv2.VideoCapture(os.path.join(VIDEO_FOLDER, video))
+    ret, img = cap.read()
+    while (ret):
+        img = None
+        ret, img = cap.read()
+        if ret:
+            img = cv2.resize(img, (224, 224))
+            frame_id += 1
 
-    # frame_id = 0
-    # cap = cv2.VideoCapture(os.path.join(VIDEO_FOLDER, video))
-    # ret, img = cap.read()
-    # while (ret):
-    #     img = None
-    #     ret, img = cap.read()
-    #     if ret:
-    #         img = cv2.resize(img, (224, 224))
-    #         frame_id += 1
+            if frame_id > 200:
 
-    #         if frame_id > 200:
+                if signal[frame_id] > 0:
+                    img = cv2.rectangle(img, (10, 10), (50, 50), (0, 0, 255), -1) 
 
-    #             if signal[frame_id] > 0:
-    #                 img = cv2.rectangle(img, (10, 10), (50, 50), (0, 0, 255), -1) 
+                fig = plt.figure()
+                ax = fig.add_subplot(111)
+                ax.plot(x, signal[frame_id-200:frame_id], "-r")
+                plot_img_np = get_img_from_fig(fig)
 
-    #             fig = plt.figure()
-    #             ax = fig.add_subplot(111)
-    #             ax.plot(x, signal[frame_id-200:frame_id], "-r")
-    #             plot_img_np = get_img_from_fig(fig)
+                cv2.imshow("dense optical flow", plot_img_np)
+                cv2.imshow("dense", img)
+                cv2.waitKey(10)
 
-    #             cv2.imshow("dense optical flow", plot_img_np)
-    #             cv2.imshow("dense", img)
-    #             cv2.waitKey(10)
-
-with open("data/flow_labels.json", "w") as outfile:
-    json.dump(flow_labels, outfile)
+# with open("data/pushing_labels.json", "w") as outfile:
+#     json.dump(flow_labels, outfile)
 

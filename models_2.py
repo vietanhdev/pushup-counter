@@ -1,5 +1,5 @@
 from tensorflow.keras.models import Sequential, Model
-from tensorflow.keras.layers import Dense, Dropout, TimeDistributed, LSTM, Conv2D, GlobalAveragePooling2D, Flatten, Conv3D, ZeroPadding3D, MaxPooling3D
+from tensorflow.keras.layers import Dense, Dropout, TimeDistributed, LSTM, Conv2D, GlobalAveragePooling2D, Flatten, Conv3D, ZeroPadding3D, MaxPooling3D, AveragePooling2D
 from tensorflow.keras.applications import MobileNetV2, EfficientNetB0
 import tensorflow as tf
 import slowfast
@@ -54,3 +54,16 @@ def build_optical_flow_model():
     model = Model(inputs=input_flow, outputs=x)
 
     return model
+
+def lenet():
+    model = tf.keras.Sequential()
+    model.add(Conv2D(filters=2, kernel_size=(3, 3), activation='relu', input_shape=(112,112,3)))
+    model.add(Flatten())
+    model.add(Dropout(0.5))
+    model.add(Dense(units=120, activation='relu'))
+    model.add(Dropout(0.5))
+    model.add(Dense(units=84, activation='relu'))
+    model.add(Dropout(0.25))
+    model.add(Dense(units=1, activation='sigmoid'))
+    return model
+

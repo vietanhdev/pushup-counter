@@ -10,11 +10,13 @@ import imgaug.augmenters as iaa
 
 class DataSequence(Sequence):
 
-    def __init__(self, images_folder, flow_folder, label_file, batch_size):
+    def __init__(self, images_folder, flow_folder, label_file, seq_len=10, batch_size=1):
 
         self.batch_size = batch_size
         self.images_folder = images_folder
         self.flow_folder = flow_folder
+        self.seq_len = seq_len
+        self.batch_size_times_seq_len = self.batch_size * self.seq_len
         with open(label_file, "r") as infile:
             labels = json.load(infile)["labels"]
 
@@ -28,17 +30,6 @@ class DataSequence(Sequence):
                 self.image_names.append(l["img_name"])
                 self.labels.append(l["label"])
 
-
-        # Filter images
-        tmp_image_names = self.image_names
-        tmp_labels = self.labels
-        steps = 8
-        self.image_names = []
-        self.labels = []
-        for i in range(0, len(tmp_image_names), steps):
-            self.image_names.append(tmp_image_names[i])
-            self.labels.append(tmp_labels[i])
-
         # self.image_names =  self.image_names[:20000]
         # self.labels =  self.labels[:20000]
 
@@ -51,8 +42,8 @@ class DataSequence(Sequence):
 
     def __getitem__(self, idx):
 
-        start_id = idx * self.batch_size
-        end_id = (idx + 1) * self.batch_size
+        start_id = idx * self.batch_size_times_seq_len
+        end_id = (idx + 1) * self.batch_size_times_seq_len
         batch_image_names = self.image_names[start_id:end_id] 
     
         batch_img = []
@@ -96,7 +87,6 @@ class DataSequence(Sequence):
         #     cv2.imshow("img", img)
         #     cv2.waitKey(0)
 
-
         batch_flow = []
         for image_name in batch_image_names:
             flow_path =  os.path.join(self.flow_folder, image_name + ".png")
@@ -107,11 +97,22 @@ class DataSequence(Sequence):
             batch_flow.append(flow_img)
         batch_flow = np.array(batch_flow)
 
-        # batch_x = [batch_img, batch_flow]
         batch_y = np.array(self.labels[start_id:end_id])
+        if self.seq_len != 1:
+            batch_img = batch_img.reshape((self.batch_size, self.seq_len, 112, 112, 3))
+            batch_flow = batch_flow.reshape((self.batch_size, self.seq_len, 112, 112, 3))
+            batch_y = batch_y.reshape((self.batch_size, self.seq_len))
+            batch_y = batch_y[:, -1]
+            batch_y = batch_y.reshape((self.batch_size))
+        else:
+            batch_img = batch_img.reshape((self.batch_size, 112, 112, 3))
+            batch_flow = batch_flow.reshape((self.batch_size, 112, 112, 3))
+            batch_y = batch_y.reshape((self.batch_size, self.seq_len, 1))
+            batch_y = batch_y[:, -1]
+            batch_y = batch_y.reshape((self.batch_size))
 
         # print(batch_x[0].shape)
 
-        return [batch_img, batch_flow], batch_y
+        return batch_flow, batch_y
 
         # return batch_x, batch_y

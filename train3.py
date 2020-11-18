@@ -5,9 +5,9 @@ from pathlib import Path
 
 import tensorflow as tf
 
-from models_2 import build_optical_flow_model, lenet, build_2_flow_model
+from models_3 import build_2_flow_model
 from losses import focal_loss
-from data_sequence_2 import DataSequence
+from data_sequence_3 import DataSequence
 
 # tf.compat.v1.disable_eager_execution()
 
@@ -32,15 +32,17 @@ Path(experiment_folder).mkdir(parents=True, exist_ok=True)
 train_data = DataSequence(config["data"]["train_images"],
         config["data"]["train_flow_images"],
         config["data"]["train_labels"],
+        seq_len=config["model"]["seq_len"],
         batch_size=config["train_params"]["train_batchsize"])
 val_data = DataSequence(config["data"]["val_images"],
         config["data"]["val_flow_images"],
         config["data"]["val_labels"],
+        seq_len=config["model"]["seq_len"],
         batch_size=config["train_params"]["val_batchsize"])
 
 
 # Build model
-model = build_2_flow_model()
+model = build_2_flow_model(config["model"]["seq_len"])
 if config["train_params"]["load_weights"]:
     model.load_weights(config["train_params"]["pretrained_weights"])
 

@@ -16,7 +16,9 @@ def is_pushing_up(begin, end, video):
     return False
 
 new_flow_data = {}
-for key, flow in flow_data.items():
+for key, data in flow_data.items():
+    flow = data["bin_label"]
+    signal = data["raw_signal"]
     new_flow = [0] * len(flow)
     flow.append(0)
     prev = 0
@@ -32,10 +34,12 @@ for key, flow in flow_data.items():
         elif flow[i] == 0 and prev == 1:
             end = i - 1
             if is_pushing_up(begin, end, video):
-                for j in range(begin, end+1):
+                for j in range(max(begin, end-10), end+1):
                     new_flow[j] = 1
         prev = flow[i]
-    new_flow_data[key] = new_flow
+    new_flow_data[key] = {}
+    new_flow_data[key]["label"] = new_flow
+    new_flow_data[key]["signal"] = signal
 
 
 def split_video_list(videos, ratio=0.8):
